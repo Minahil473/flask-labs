@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Student profile</title>
+</head>
+<body>
+    <h1>hello {{ name }}</h1>
+    <!-- jinja conditionals -->
+    {% if is_topper %}
+        <p>Congratulations! You are a topper student.</p>
+    {% else %}
+        <p>Keep working hard to become a topper!</p>
+    {% endif %}
+
+    <h3>YOUR SUBJECTS</h3>
+    <ul>
+        {% for subject in subjects %}
+            <li>{{ subject }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
