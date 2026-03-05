@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if is_admin %}
+        Admin Dashboard - Flask Blog
+    {% else %}
+        Home - Flask Blog
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- Page Header Section -->
+    <section class="page-header">
+        {% if is_admin %}
+            <h2> Dashboard</h2>
+            <p class="subtitle">Manage all posts including drafts</p>
+        {% else %}
+            <h2>Latest Posts</h2>
+            <p class="subtitle">Welcome to our blog dashboard</p>
+        {% endif %}
+    </section>
+
+    <!-- Statistics Section  -->
+    {% if not is_admin %}
+    <section class="stats-section">
+        <div class="stat-card">
+            <span class="stat-number">{{ posts|length }}</span>
+            <span class="stat-label">Published Posts</span>
+        </div>
+        {% if unpublished_count > 0 %}
+        <div class="stat-card stat-card-draft">
+            <span class="stat-number">{{ unpublished_count }}</span>
+            <span class="stat-label">Draft Posts</span>
+        </div>
+        {% endif %}
+        <div class="stat-card">
+            <span class="stat-number">{{ total_posts }}</span>
+            <span class="stat-label">Total Posts</span>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Posts Grid -->
+    <section class="posts-section">
+        {% if posts %}
+            <div class="posts-grid">
+                {% for post in posts %}
+                    <article class="post-card {% if not post.published %}post-card-draft{% endif %}">
+                        <!-- Post Header -->
+                        <div class="post-card-header">
+                            {% if not post.published %}
+                                <span class="draft-badge">DRAFT</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Post Content -->
+                        <div class="post-card-content">
+                            <h3 class="post-title">
+                                {% if post.published %}
+                                    <a href="{{ url_for('post_detail', post_id=post.id) }}">
+                                        {{ post.title }}
+                                    </a>
+                                {% else %}
+                                    {{ post.title }}
+                                {% endif %}
+                            </h3>
+
+                            <p class="post-excerpt">
+                                {{ post.content[:120] }}{% if post.content|length > 120 %}...{% endif %}
+                            </p>
+                        </div>
+
+                        <!-- Post Footer -->
+                        <div class="post-card-footer">
+                            <div class="post-meta">
+                                <span class="post-author">By {{ post.author }}</span>
+                                <span class="post-date">{{ post.date.strftime('%B %d, %Y') }}</span>
+                            </div>
+
+                            {% if post.published %}
+                                <a href="{{ url_for('post_detail', post_id=post.id) }}" class="read-more">
+                                    Read More &rarr;
+                                </a>
+                            {% else %}
+                                <span class="read-more-disabled">Coming Soon</span>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty state when no posts exist -->
+            <div class="empty-state">
+                <h3>No posts available</h3>
+                <p>Check back later for new content!</p>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

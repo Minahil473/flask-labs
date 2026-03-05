@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Flask Blog Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="{{ url_for('home') }}">Blog</a>
+            </h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2026 Flask Blog Dashboard. Built with Flask & Jinja.</p>
+        </div>
+    </footer>
+</body>
+</html>

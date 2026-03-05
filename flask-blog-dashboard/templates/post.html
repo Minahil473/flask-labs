@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Flask Blog{% endblock %}
+
+{% block content %}
+   
+    <nav class="post-header">
+        <a href="{{ url_for('home') }}">Home</a>
+        <span class="separator">/</span>
+        <span class="post-title">{{ post.title }}</span>
+    </nav>
+
+    <!-- post details-->
+    <article class="post-detail">
+        <header class="post-detail_header">
+            <h1 class="post-detail_title">{{ post.title }}</h1>
+
+            <div class="post-detail_meta">
+                <div class="author-info">
+                    <span class="author-avatar">{{ post.author[0] }}</span>
+                    <div class="author-details">
+                        <span class="author-name">{{ post.author }}</span>
+                        <span class="post-date">{{ post.date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                </div>
+
+                {% if not post.published %}
+                    <span class="status-badge status-badge--draft">Unpublished Draft</span>
+                {% else %}
+                    <span class="status-badge status-badge--published">Published</span>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Post Content -->
+        <div class="post-detail-content">
+            <p>{{ post.content }}</p>
+
+            {% if post.content|length < 200 %}
+                <p>This is a shorter post, but here's some additional context. Flask makes it incredibly easy to build web applications with Python. The framework provides essential tools and libraries while remaining lightweight and flexible.</p>
+
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>Flask is lightweight and easy to get started with</li>
+                    <li>Jinja templates provide powerful rendering capabilities</li>
+                    <li>Template inheritance keeps your code DRY</li>
+                    <li>Conditional statements allow dynamic content rendering</li>
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Post Footer -->
+        <footer class="post-detail-footer">
+            <div class="post-tags">
+                <span class="tag">Flask</span>
+                <span class="tag">Python</span>
+            </div>
+
+            <div class="post-navigation">
+                <a href="{{ url_for('home') }}" class="btn btn--secondary">
+                    &larr; Back to All Posts
+                </a>
+
+                {% if not post.published %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn--primary">
+                        View in dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </footer>
+    </article>
+{% endblock %}
