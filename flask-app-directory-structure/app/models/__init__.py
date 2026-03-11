@@ -1,0 +1,1 @@
+# foor database models, if needed in the future

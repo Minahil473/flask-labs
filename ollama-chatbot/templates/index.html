@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Personal AI Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+  <header>Personal AI Chatbot</header>
+
+  <div id="chat-box"></div>
+
+  <div id="input-area">
+    <div id="input-row">
+      <input type="text" id="user-input" placeholder="Message Personal AI..." autocomplete="off" />
+      <button id="send-btn" onclick="sendMessage()">↑</button>
+    </div>
+    <div class="hint">Press Enter to send</div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const btn = document.getElementById("send-btn");
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage(message, "user-msg");
+      input.value = "";
+      input.disabled = true;
+      btn.disabled = true;
+
+      const typingId = showTypingIndicator();
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+        removeTypingIndicator(typingId);
+        appendMessage(data.reply || data.error, "bot-msg");
+
+      } catch (err) {
+        removeTypingIndicator(typingId);
+        appendMessage("Something went wrong. Try again.", "bot-msg");
+      }
+
+      input.disabled = false;
+      btn.disabled = false;
+      input.focus();
+    }
+
+    function appendMessage(text, cssClass) {
+      const box = document.getElementById("chat-box");
+      const div = document.createElement("div");
+      div.className = cssClass;
+      div.textContent = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const box = document.getElementById("chat-box");
+      const id = "typing-" + Date.now();
+      const div = document.createElement("div");
+      div.className = "bot-msg";
+      div.id = id;
+      div.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return id;
+    }
+
+    function removeTypingIndicator(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    document.getElementById("user-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+
+</body>
+</html>
