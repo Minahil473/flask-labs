@@ -1,10 +1,9 @@
-from flask import Flask, request, jsonify, render_template
-import requests
+from flask import Flask, request, jsonify, render_template, Response
+import requests, json
 
 app = Flask(__name__)
-
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "tinyllama"  # ✅ matches your ollama list
+MODEL_NAME = "phi3:mini"
 
 @app.route("/")
 def index():
@@ -15,20 +14,22 @@ def chat():
     data = request.get_json()
     user_message = data.get("message", "")
 
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
-
-    try:
+    def generate():
         response = requests.post(OLLAMA_URL, json={
             "model": MODEL_NAME,
             "prompt": user_message,
-            "stream": False
-        })
-        result = response.json()
-        return jsonify({"reply": result.get("response", "No response")})
+            "stream": True        # ← streaming ON
+        }, stream=True)
 
-    except requests.exceptions.ConnectionError:
-        return jsonify({"error": "Ollama is not running!"}), 503
+        for line in response.iter_lines():
+            if line:
+                chunk = json.loads(line)
+                token = chunk.get("response", "")
+                yield f"data: {json.dumps({'token': token})}\n\n"
+                if chunk.get("done"):
+                    break
+
+    return Response(generate(), mimetype="text/event-stream")
 
 if __name__ == "__main__":
     app.run(debug=True)
